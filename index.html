@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Roulette Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Roulette Tracker</h1>
+
+    <div class="input-group">
+      <input type="number" id="spinInput" placeholder="Enter number (0–36)" min="0" max="36" />
+      <button onclick="addSpin()">Add Spin</button>
+    </div>
+
+    <div class="section">
+      <h2>Last 30 Spins</h2>
+      <p id="spinList">No spins yet.</p>
+    </div>
+
+    <div class="section">
+      <h2>Column Hits</h2>
+      <ul id="columnHits"></ul>
+    </div>
+
+    <div class="section">
+      <h2>Row Hits</h2>
+      <ul id="rowHits"></ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
