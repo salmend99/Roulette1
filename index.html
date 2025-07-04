@@ -9,7 +9,6 @@
 <body>
   <div class="container">
     <h1>Roulette Tracker</h1>
-
     <div class="input-group">
       <input type="number" id="spinInput" placeholder="Enter number (0–36)" min="0" max="36" />
       <button onclick="addSpin()">Add Spin</button>
@@ -21,29 +20,24 @@
     </div>
 
     <div class="section">
+      <h2>Unhit Numbers</h2>
+      <p id="unhitNumbers"></p>
+    </div>
+
+    <div class="section">
       <h2>Column Hits</h2>
-      <ul id="columnHits"></ul>
+      <p id="columnHits"></p>
     </div>
 
     <div class="section">
       <h2>Row Hits</h2>
-      <ul id="rowHits"></ul>
+      <p id="rowHits"></p>
     </div>
 
     <div class="section">
-      <h2>Unhit Numbers</h2>
-      <p id="unhitNumbers">All numbers hit.</p>
+      <h2>Streak Info</h2>
+      <p id="streakInfo"></p>
     </div>
-  </div>
-  
-  <div class="section">
-    <h2>Unhit Numbers</h2>
-    <p id="unhitNumbers"></p>
-  </div>
-  
-  <div class="section">
-    <h2>Betting Advice</h2>
-    <p id="betAdvice">No bets yet.</p>
   </div>
 
   <script src="script.js"></script>
