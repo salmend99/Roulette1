@@ -1,5 +1,8 @@
 const spins = [];
 
+const redNumbers = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+const blackNumbers = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
+
 const columns = {
   col1: [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34],
   col2: [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
@@ -36,28 +39,28 @@ function getUnhitNumbers() {
   return allNumbers.filter(n => !spins.includes(n));
 }
 
-function updateDisplay() {
-  document.getElementById("spinList").textContent = spins.join(", ") || "No spins yet.";
-
-  const colHits = countHits(columns);
-  const rowHits = countHits(rows);
-
-  const colList = document.getElementById("columnHits");
-  colList.innerHTML = "";
-  Object.entries(colHits).forEach(([key, count]) => {
-    const li = document.createElement("li");
-    li.textContent = `${key.toUpperCase()}: ${count}`;
-    colList.appendChild(li);
-  });
-
-  const rowList = document.getElementById("rowHits");
-  rowList.innerHTML = "";
-  Object.entries(rowHits).forEach(([key, count]) => {
-    const li = document.createElement("li");
-    li.textContent = `${key.toUpperCase()}: ${count}`;
-    rowList.appendChild(li);
-  });
-
-  const unhit = getUnhitNumbers();
-  document.getElementById("unhitNumbers").textContent = unhit.join(", ") || "All numbers hit.";
+function getColor(num) {
+  if (redNumbers.includes(num)) return "red";
+  if (blackNumbers.includes(num)) return "black";
+  return "green";
 }
+
+function getColumn(num) {
+  for (const [col, nums] of Object.entries(columns)) {
+    if (nums.includes(num)) return col;
+  }
+  return null;
+}
+
+function getRow(num) {
+  for (const [row, nums] of Object.entries(rows)) {
+    if (nums.includes(num)) return row;
+  }
+  return null;
+}
+
+function getStreak(arr) {
+  if (arr.length === 0) return { value: null, streak: 0 };
+  let streak = 1;
+  const val = arr[0];
+  for (let i = 1; i < ar
