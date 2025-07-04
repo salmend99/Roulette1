@@ -26,23 +26,36 @@ function addSpin() {
   }
 }
 
-function countHits(group) {
-  const result = {};
-  Object.entries(group).forEach(([key, numbers]) => {
-    result[key] = spins.filter(n => numbers.includes(n)).length;
-  });
-  return result;
+function updateDisplay() {
+  const spinList = document.getElementById("spinList");
+  spinList.innerHTML = spins.map(n => {
+    const color = getColor(n);
+    return `<span class="${color}">${n}</span>`;
+  }).join(", ");
+
+  document.getElementById("unhitNumbers").textContent = getUnhitNumbers().join(", ");
+  document.getElementById("columnHits").textContent = JSON.stringify(countHits(columns));
+  document.getElementById("rowHits").textContent = JSON.stringify(countHits(rows));
+  document.getElementById("streakInfo").textContent = JSON.stringify(getStreaks());
 }
 
 function getUnhitNumbers() {
-  const allNumbers = Array.from({ length: 37 }, (_, i) => i);
-  return allNumbers.filter(n => !spins.includes(n));
+  const all = Array.from({ length: 37 }, (_, i) => i);
+  return all.filter(n => !spins.includes(n));
 }
 
 function getColor(num) {
   if (redNumbers.includes(num)) return "red";
   if (blackNumbers.includes(num)) return "black";
   return "green";
+}
+
+function countHits(group) {
+  const result = {};
+  for (const [key, nums] of Object.entries(group)) {
+    result[key] = spins.filter(n => nums.includes(n)).length;
+  }
+  return result;
 }
 
 function getColumn(num) {
@@ -59,8 +72,27 @@ function getRow(num) {
   return null;
 }
 
+function getStreaks() {
+  if (spins.length === 0) return {};
+
+  let streaks = {
+    color: getStreak(spins.map(getColor)),
+    column: getStreak(spins.map(getColumn)),
+    row: getStreak(spins.map(getRow))
+  };
+
+  return streaks;
+}
+
 function getStreak(arr) {
-  if (arr.length === 0) return { value: null, streak: 0 };
+  let val = arr[0];
   let streak = 1;
-  const val = arr[0];
-  for (let i = 1; i < ar
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] === val) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return { value: val, streak };
+}
