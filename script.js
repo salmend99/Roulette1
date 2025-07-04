@@ -27,27 +27,27 @@ function addSpin() {
 }
 
 function updateDisplay() {
-  const spinList = document.getElementById("spinList");
-  spinList.innerHTML = spins.map(n => {
+  document.getElementById("spinList").innerHTML = spins.map(n => {
     const color = getColor(n);
     return `<span class="${color}">${n}</span>`;
   }).join(", ");
 
-  document.getElementById("unhitNumbers").textContent = getUnhitNumbers().join(", ");
+  document.getElementById("unhitNumbers").textContent = getUnhitNumbers().join(", ") || "All numbers hit.";
   document.getElementById("columnHits").textContent = JSON.stringify(countHits(columns));
   document.getElementById("rowHits").textContent = JSON.stringify(countHits(rows));
   document.getElementById("streakInfo").textContent = JSON.stringify(getStreaks());
-}
-
-function getUnhitNumbers() {
-  const all = Array.from({ length: 37 }, (_, i) => i);
-  return all.filter(n => !spins.includes(n));
+  document.getElementById("bettingAdvice").textContent = generateBettingAdvice();
 }
 
 function getColor(num) {
   if (redNumbers.includes(num)) return "red";
   if (blackNumbers.includes(num)) return "black";
   return "green";
+}
+
+function getUnhitNumbers() {
+  const all = Array.from({ length: 37 }, (_, i) => i);
+  return all.filter(n => !spins.includes(n));
 }
 
 function countHits(group) {
@@ -72,18 +72,6 @@ function getRow(num) {
   return null;
 }
 
-function getStreaks() {
-  if (spins.length === 0) return {};
-
-  let streaks = {
-    color: getStreak(spins.map(getColor)),
-    column: getStreak(spins.map(getColumn)),
-    row: getStreak(spins.map(getRow))
-  };
-
-  return streaks;
-}
-
 function getStreak(arr) {
   let val = arr[0];
   let streak = 1;
@@ -95,4 +83,24 @@ function getStreak(arr) {
     }
   }
   return { value: val, streak };
+}
+
+function getStreaks() {
+  return {
+    color: getStreak(spins.map(getColor)),
+    column: getStreak(spins.map(getColumn)),
+    row: getStreak(spins.map(getRow))
+  };
+}
+
+function generateBettingAdvice() {
+  const streaks = getStreaks();
+  if (streaks.color.streak >= 3) {
+    return `Color "${streaks.color.value}" has hit ${streaks.color.streak} times. Consider betting opposite.`;
+  } else if (streaks.column.streak >= 3) {
+    return `Column "${streaks.column.value}" has hit ${streaks.column.streak} times. Consider betting opposite column.`;
+  } else if (streaks.row.streak >= 3) {
+    return `Row "${streaks.row.value}" has hit ${streaks.row.streak} times. Consider betting opposite row.`;
+  }
+  return "No clear pattern detected. Play safe.";
 }
