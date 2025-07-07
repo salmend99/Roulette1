@@ -21,7 +21,25 @@ function addSpin() {
 }
 
 function displaySpins() {
-  document.getElementById("spinList").textContent = spins.join(', ');
+  const spinList = document.getElementById("spinList");
+  spinList.innerHTML = ""; // Clear current content
+
+  spins.forEach((num) => {
+    const span = document.createElement("span");
+    span.textContent = num + " ";
+
+    if (redNumbers.includes(num)) {
+      span.style.color = "red";
+    } else if (blackNumbers.includes(num)) {
+      span.style.color = "black";
+    } else {
+      span.style.color = "green"; // for 0
+    }
+
+    span.style.fontWeight = "bold";
+    span.style.marginRight = "6px";
+    spinList.appendChild(span);
+  });
 }
 
 async function analyzeSpinsWithAI() {
@@ -39,8 +57,7 @@ You are a roulette pattern recognition expert. Given the last 50 spins, analyze 
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": 
-          "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" // Replace this later
+        "Authorization": "Bearer YOUR_API_KEY_HERE" // Replace with your actual key
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
@@ -52,8 +69,13 @@ You are a roulette pattern recognition expert. Given the last 50 spins, analyze 
     });
 
     const data = await res.json();
-    const aiMessage = data.choices[0].message.content.trim();
-    responseBox.textContent = aiMessage;
+
+    if (data.choices && data.choices.length > 0) {
+      const aiMessage = data.choices[0].message.content.trim();
+      responseBox.textContent = aiMessage;
+    } else {
+      responseBox.textContent = "AI response was empty.";
+    }
 
   } catch (err) {
     responseBox.textContent = "AI analysis failed.";
