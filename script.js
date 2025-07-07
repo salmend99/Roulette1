@@ -39,7 +39,8 @@ You are a roulette pattern recognition expert. Given the last 50 spins, analyze 
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer YOUR_API_KEY_HERE" // Replace this later
+        "Authorization": 
+          "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" // Replace this later
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
