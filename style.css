@@ -1,47 +1,168 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #111;
-  color: white;
-  padding: 20px;
+const spins = [];
+
+const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+const blackNumbers = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
+
+const rows = {
+  "Top Row": [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
+  "Middle Row": [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
+  "Bottom Row": [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
+};
+
+const columns = {
+  "1st Column": [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34],
+  "2nd Column": [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
+  "3rd Column": [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36]
+};
+
+function addSpin() {
+  const input = document.getElementById("spinInput");
+  const value = parseInt(input.value, 10);
+
+  if (isNaN(value) || value < 0 || value > 36) {
+    alert("Enter a valid number between 0 and 36.");
+    return;
+  }
+
+  spins.unshift(value);
+
+  if (spins.length > 50) {
+    spins.pop();
+  }
+
+  displaySpins();
+  updateTrackers();
+
+  input.value = "";
 }
 
-.container {
-  max-width: 700px;
-  margin: auto;
+function displaySpins() {
+  const spinList = document.getElementById("spinList");
+  spinList.innerHTML = "";
+
+  if (spins.length === 0) {
+    spinList.textContent = "No spins yet.";
+    return;
+  }
+
+  spins.forEach((num) => {
+    const span = document.createElement("span");
+    span.textContent = `${num} `;
+
+    if (redNumbers.includes(num)) {
+      span.style.color = "red";
+    } else if (blackNumbers.includes(num)) {
+      span.style.color = "black";
+    } else {
+      span.style.color = "green";
+    }
+
+    span.style.fontWeight = "bold";
+    span.style.marginRight = "6px";
+    spinList.appendChild(span);
+  });
 }
 
-.input-group {
-  margin-bottom: 20px;
+function updateTrackers() {
+  updateUnhitNumbers();
+  updateColumnHits();
+  updateRowHits();
+  updateStreakInfo();
+  updateBettingAdvice();
 }
 
-input[type="number"] {
-  padding: 8px;
-  width: 150px;
-  font-size: 16px;
+function updateUnhitNumbers() {
+  const unhitNumbers = document.getElementById("unhitNumbers");
+
+  const allNumbers = Array.from({ length: 37 }, (_, i) => i);
+  const missingNumbers = allNumbers.filter((num) => !spins.includes(num));
+
+  unhitNumbers.textContent =
+    missingNumbers.length > 0 ? missingNumbers.join(", ") : "All numbers have hit.";
 }
 
-button {
-  padding: 8px 12px;
-  margin-left: 10px;
-  font-size: 16px;
-  cursor: pointer;
+function updateColumnHits() {
+  const columnHits = document.getElementById("columnHits");
+
+  columnHits.innerHTML = Object.entries(columns)
+    .map(([name, numbers]) => {
+      return `${name}: ${countHits(numbers)} hits`;
+    })
+    .join("<br>");
 }
 
-.section {
-  margin-bottom: 20px;
+function updateRowHits() {
+  const rowHits = document.getElementById("rowHits");
+
+  rowHits.innerHTML = Object.entries(rows)
+    .map(([name, numbers]) => {
+      return `${name}: ${countHits(numbers)} hits`;
+    })
+    .join("<br>");
 }
 
-.red {
-  color: red;
+function updateStreakInfo() {
+  const streakInfo = document.getElementById("streakInfo");
+
+  if (spins.length === 0) {
+    streakInfo.textContent = "No spins yet.";
+    return;
+  }
+
+  const latestSpin = spins[0];
+  const latestRow = getSectionName(latestSpin, rows);
+  const latestColumn = getSectionName(latestSpin, columns);
+
+  streakInfo.textContent = `Latest spin: ${latestSpin} | Row: ${latestRow} | Column: ${latestColumn}`;
 }
 
-.black {
-  color: black;
-  background: white;
-  padding: 2px 6px;
-  border-radius: 4px;
+function updateBettingAdvice() {
+  const bettingAdvice = document.getElementById("bettingAdvice");
+
+  if (spins.length < 5) {
+    bettingAdvice.textContent = "Enter at least 5 spins to get a better recommendation.";
+    return;
+  }
+
+  const rowStats = Object.entries(rows).map(([name, numbers]) => ({
+    name,
+    hits: countHits(numbers)
+  }));
+
+  const columnStats = Object.entries(columns).map(([name, numbers]) => ({
+    name,
+    hits: countHits(numbers)
+  }));
+
+  rowStats.sort((a, b) => a.hits - b.hits);
+  columnStats.sort((a, b) => a.hits - b.hits);
+
+  const coldestRow = rowStats[0];
+  const coldestColumn = columnStats[0];
+
+  bettingAdvice.innerHTML = `
+    Bet suggestion:<br>
+    <strong>${coldestRow.name}</strong> — only ${coldestRow.hits} hits in the last ${spins.length} spins.<br>
+    <strong>${coldestColumn.name}</strong> — only ${coldestColumn.hits} hits in the last ${spins.length} spins.<br>
+    <br>
+    Best section combo: <strong>${coldestRow.name} + ${coldestColumn.name}</strong>
+  `;
 }
 
-.green {
-  color: lime;
+function countHits(numbers) {
+  return spins.filter((spin) => numbers.includes(spin)).length;
+}
+
+function getSectionName(number, sectionGroup) {
+  if (number === 0) {
+    return "Zero";
+  }
+
+  for (const [name, numbers] of Object.entries(sectionGroup)) {
+    if (numbers.includes(number)) {
+      return name;
+    }
+  }
+
+  return "Unknown";
 }
