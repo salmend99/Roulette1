@@ -1,10 +1,7 @@
 const spins = [];
 
-const rows = {
-  "Top Row": [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
-  "Middle Row": [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
-  "Bottom Row": [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
-};
+const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+const blackNumbers = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
 
 const columns = {
   "1st Column": [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34],
@@ -12,14 +9,17 @@ const columns = {
   "3rd Column": [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36]
 };
 
-const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-const blackNumbers = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
+const rows = {
+  "Top Row": [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36],
+  "Middle Row": [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35],
+  "Bottom Row": [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]
+};
 
 function addSpin() {
   const input = document.getElementById("spinInput");
   const value = Number(input.value);
 
-  if (value < 0 || value > 36 || input.value === "") {
+  if (input.value === "" || value < 0 || value > 36) {
     alert("Enter a valid number between 0 and 36.");
     return;
   }
@@ -33,11 +33,7 @@ function addSpin() {
   input.value = "";
 
   displaySpins();
-  updateUnhitNumbers();
-  updateColumnHits();
-  updateRowHits();
-  updateStreakInfo();
-  updateBettingAdvice();
+  updateTrackers();
 }
 
 function displaySpins() {
@@ -62,16 +58,19 @@ function displaySpins() {
   });
 }
 
-function countHits(numbers) {
-  return spins.filter((spin) => numbers.includes(spin)).length;
+function updateTrackers() {
+  updateUnhitNumbers();
+  updateColumnHits();
+  updateRowHits();
+  updateStreakInfo();
+  updateBettingAdvice();
 }
 
 function updateUnhitNumbers() {
   const allNumbers = Array.from({ length: 37 }, (_, i) => i);
   const unhit = allNumbers.filter((num) => !spins.includes(num));
 
-  document.getElementById("unhitNumbers").textContent =
-    unhit.length ? unhit.join(", ") : "All numbers have hit.";
+  document.getElementById("unhitNumbers").textContent = unhit.join(", ");
 }
 
 function updateColumnHits() {
@@ -111,10 +110,14 @@ function updateBettingAdvice() {
   const coldestColumn = columnStats[0];
 
   document.getElementById("bettingAdvice").innerHTML = `
-    Bet the coldest sections:<br>
-    <strong>${coldestRow.name}</strong> with ${coldestRow.hits} hits<br>
-    <strong>${coldestColumn.name}</strong> with ${coldestColumn.hits} hits
+    Bet suggestion:<br>
+    <strong>${coldestRow.name}</strong> — ${coldestRow.hits} hits<br>
+    <strong>${coldestColumn.name}</strong> — ${coldestColumn.hits} hits
   `;
+}
+
+function countHits(numbers) {
+  return spins.filter((spin) => numbers.includes(spin)).length;
 }
 
 function getSection(number, group) {
