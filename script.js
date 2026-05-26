@@ -16,23 +16,22 @@ const rows = {
 };
 
 function addSpin() {
-  const input = document.getElementById("spinInput").value;
+  const input = document.getElementById("spinInput").value.trim();
 
-  // Split by commas or spaces
+  // Split by spaces or commas
   const numbers = input
     .split(/[\s,]+/)
-    .map(num => parseInt(num))
+    .map(num => Number(num))
     .filter(num => !isNaN(num) && num >= 0 && num <= 36);
 
   if (numbers.length === 0) {
-    alert("Please enter valid roulette numbers (0-36)");
+    alert("Enter valid numbers from 0-36");
     return;
   }
 
   numbers.forEach(num => {
     spins.unshift(num);
 
-    // Keep only last 50
     if (spins.length > 50) {
       spins.pop();
     }
@@ -40,7 +39,6 @@ function addSpin() {
 
   updateDisplay();
 
-  // Clear input
   document.getElementById("spinInput").value = "";
 }
 
